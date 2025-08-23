@@ -1,23 +1,24 @@
 [gd_scene load_steps=4 format=3 uid="uid://vlfetyoc5o68"]
 
-[ext_resource type="Script" uid="uid://bne4qra2gqk1g" path="res://assets/character/player.gd" id="1_wbwf2"]
+[ext_resource type="Script" uid="uid://py607622bh1v" path="res://assets/character/player2.gd" id="1_wbwf2"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pgkuf"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j3eqw"]
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("camera", "character")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("camera", "pivot")]
 script = ExtResource("1_wbwf2")
-camera = NodePath("Camera3D")
-character = NodePath(".")
+camera = NodePath("Character/Pivot/Camera3D")
+pivot = NodePath("Character/Pivot")
 
-[node name="Pivot" type="Node3D" parent="."]
-
-[node name="Character" type="MeshInstance3D" parent="Pivot"]
+[node name="Character" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_pgkuf")
+skeleton = NodePath("Pivot")
+
+[node name="Pivot" type="Node3D" parent="Character"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.603276, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Character/Pivot"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_j3eqw")
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5041, -0.46325)

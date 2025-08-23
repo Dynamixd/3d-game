@@ -23,23 +23,15 @@ func _physics_process(delta: float) -> void:
 		direction.x -= 1
 	if Input.is_action_pressed("jump"):
 		jump()
-		direction.y += 1
 	
-	if not is_on_floor():
-		target_velocity.y = target_velocity.y - (fall_acceleration * delta)
-		direction.y -= 1
-	
+	_gravity(delta)
 	_rotate_camera(delta)
 	
-	if direction != Vector3.ZERO:
-		direction = direction.normalized()
-		$Pivot.basis = basis.looking_at(direction)
-		
-		target_velocity.x = direction.x * speed
-		target_velocity.z = direction.z * speed
-
-		velocity = target_velocity
-		move_and_slide()
+	direction = direction.normalized()
+	target_velocity.x = direction.x * speed
+	target_velocity.z = direction.z * speed
+	velocity = target_velocity
+	move_and_slide()
 
 func jump() -> void:
 	target_velocity.y = jump_height
@@ -53,3 +45,8 @@ func _rotate_camera(delta: float):
 	rotation.y -= look_dir.x * look_sens * delta
 	character.rotation.x = clamp(character.rotation.x - look_dir.y * look_sens * delta, -1.5, 1.5)
 	look_dir = Vector2.ZERO
+
+func _gravity(delta: float) -> void:
+		if not is_on_floor():
+			target_velocity.y = target_velocity.y - (fall_acceleration * delta)
+	
