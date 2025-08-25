@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://vlfetyoc5o68"]
+[gd_scene load_steps=6 format=3 uid="uid://vlfetyoc5o68"]
 
 [ext_resource type="Script" uid="uid://py607622bh1v" path="res://assets/character/player2.gd" id="1_wbwf2"]
 [ext_resource type="PackedScene" uid="uid://cevowifyvnb2v" path="res://assets/character/bullet.tscn" id="2_pgkuf"]
+[ext_resource type="ArrayMesh" uid="uid://b2glgywle4su3" path="res://assets/models/AK_WIP.obj" id="3_j3eqw"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pgkuf"]
 
@@ -12,7 +13,7 @@ script = ExtResource("1_wbwf2")
 camera = NodePath("Character/Pivot/Camera3D")
 pivot = NodePath("Character/Pivot")
 bullet = ExtResource("2_pgkuf")
-Bullet_Point = NodePath("Character/Pivot/Bullet_Point")
+Bullet_Point = NodePath("Character/Pivot/Camera3D/AkWip/Bullet_Point")
 
 [node name="Character" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_pgkuf")
@@ -23,8 +24,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.603276, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Character/Pivot"]
 
-[node name="Bullet_Point" type="Marker3D" parent="Character/Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.793582)
+[node name="AkWip" type="MeshInstance3D" parent="Character/Pivot/Camera3D"]
+transform = Transform3D(-1.63567e-08, 0, -0.374197, 0, 0.374197, 0, 0.374197, 0, -1.63567e-08, 0.306306, -0.245014, -0.167791)
+mesh = ExtResource("3_j3eqw")
+skeleton = NodePath("../../../..")
+
+[node name="Bullet_Point" type="Marker3D" parent="Character/Pivot/Camera3D/AkWip"]
+transform = Transform3D(-1.16814e-07, 0, 2.67239, 0, 2.67239, 0, -2.67239, 0, -1.16814e-07, -3.09188, 0.201342, 0.00490916)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_j3eqw")

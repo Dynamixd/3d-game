@@ -4,11 +4,11 @@
 bounce = 0.3
 
 [sub_resource type="SphereMesh" id="SphereMesh_igvrq"]
-radius = 0.25
-height = 0.5
+radius = 0.025
+height = 0.05
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_otbnf"]
-radius = 0.25
+radius = 0.02
 
 [node name="Bullet" type="RigidBody3D"]
 collision_layer = 4
@@ -16,7 +16,9 @@ collision_mask = 5
 physics_material_override = SubResource("PhysicsMaterial_igvrq")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.629811, 0, 0, 0, 0.629811, 0, 0, 0, 0.629811, 0, 0, 0)
 mesh = SubResource("SphereMesh_igvrq")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.7949, 0, 0, 0, 0.7949, 0, 0, 0, 0.7949, 0, 0, 0)
 shape = SubResource("SphereShape3D_otbnf")
