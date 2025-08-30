@@ -1,36 +1,212 @@
-[gd_scene load_steps=6 format=3 uid="uid://vlfetyoc5o68"]
+[gd_scene load_steps=20 format=3 uid="uid://vlfetyoc5o68"]
 
 [ext_resource type="Script" uid="uid://py607622bh1v" path="res://assets/character/player2.gd" id="1_wbwf2"]
-[ext_resource type="PackedScene" uid="uid://cevowifyvnb2v" path="res://assets/character/bullet.tscn" id="2_pgkuf"]
-[ext_resource type="ArrayMesh" uid="uid://b2glgywle4su3" path="res://assets/models/AK_WIP.obj" id="3_j3eqw"]
+[ext_resource type="Texture2D" uid="uid://cg8plwfeaglkc" path="res://addons/prototype_mini_bundle/prototype_red.png" id="3_q2al4"]
+[ext_resource type="PackedScene" uid="uid://dmexsha1e2q2p" path="res://assets/models/ak_47.tscn" id="3_vsn6u"]
+[ext_resource type="Texture2D" uid="uid://dqdm16pobdv61" path="res://textures/industrial_sunset_puresky_4k.hdr" id="3_ytt0u"]
+[ext_resource type="Script" uid="uid://dfu1rsdjei4le" path="res://assets/character/reticule.gd" id="8_v8ix7"]
+[ext_resource type="Theme" uid="uid://2op28l7sarxa" path="res://assets/UI/themes/DebugPanel.tres" id="9_vsn6u"]
+[ext_resource type="Script" uid="uid://ctcqj2jswpync" path="res://assets/character/debug_panel.gd" id="10_totjo"]
+[ext_resource type="Script" uid="uid://dthisyta2vdpc" path="res://assets/character/state_machine.gd" id="11_totjo"]
+[ext_resource type="Script" uid="uid://bfa37dy22yahe" path="res://assets/character/IdlePlayerState.gd" id="12_js4yh"]
+[ext_resource type="Script" uid="uid://vu4ebk8sgeb" path="res://assets/character/WalkingPlayerState.gd" id="13_06cyt"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ls62i"]
+panorama = ExtResource("3_ytt0u")
+
+[sub_resource type="Sky" id="Sky_3di1y"]
+sky_material = SubResource("PanoramaSkyMaterial_ls62i")
+
+[sub_resource type="Environment" id="Environment_q2al4"]
+background_mode = 2
+background_energy_multiplier = 0.59
+sky = SubResource("Sky_3di1y")
+sdfgi_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q2al4"]
+albedo_texture = ExtResource("3_q2al4")
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pgkuf"]
+material = SubResource("StandardMaterial3D_q2al4")
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j3eqw"]
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("camera", "pivot", "Bullet_Point")]
+[sub_resource type="Animation" id="Animation_vsn6u"]
+resource_name = "walking"
+length = 2.0
+loop_mode = 1
+step = 0.5
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraController:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0.0153789, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, -0.0146305, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0.0150757, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.49361, 2)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraController:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0.569598, -0.25, 0, 0.25, 0.0244486, 0.703285, -0.25, 0, 0.25, 0, 0.570332, -0.25, 0.0217861, 0.25, 0.0223373, 0.701332, -0.25, 0, 0.25, 0, 0.570332, -0.25, 0.0217861, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraController:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.49361, 2)
+}
+
+[sub_resource type="Animation" id="Animation_totjo"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CameraController:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CameraController:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0.603276, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CameraController:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_js4yh"]
+_data = {
+&"RESET": SubResource("Animation_totjo"),
+&"walking": SubResource("Animation_vsn6u")
+}
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("player", "camera")]
 script = ExtResource("1_wbwf2")
-camera = NodePath("Character/Pivot/Camera3D")
-pivot = NodePath("Character/Pivot")
-bullet = ExtResource("2_pgkuf")
-Bullet_Point = NodePath("Character/Pivot/Camera3D/AkWip/Bullet_Point")
+player = NodePath(".")
+camera = NodePath("CameraController/Camera3D")
+
+[node name="CameraController" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.603276, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraController"]
+environment = SubResource("Environment_q2al4")
+
+[node name="AK47" parent="CameraController/Camera3D" instance=ExtResource("3_vsn6u")]
+transform = Transform3D(-1.84649e-08, 0, -0.422428, 0, 0.422428, 0, 0.422428, 0, -1.84649e-08, 0.463954, -0.270865, -0.0824165)
 
 [node name="Character" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_pgkuf")
-skeleton = NodePath("Pivot")
-
-[node name="Pivot" type="Node3D" parent="Character"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.603276, 0)
-
-[node name="Camera3D" type="Camera3D" parent="Character/Pivot"]
-
-[node name="AkWip" type="MeshInstance3D" parent="Character/Pivot/Camera3D"]
-transform = Transform3D(-1.63567e-08, 0, -0.374197, 0, 0.374197, 0, 0.374197, 0, -1.63567e-08, 0.306306, -0.245014, -0.167791)
-mesh = ExtResource("3_j3eqw")
-skeleton = NodePath("../../../..")
-
-[node name="Bullet_Point" type="Marker3D" parent="Character/Pivot/Camera3D/AkWip"]
-transform = Transform3D(-1.16814e-07, 0, 2.67239, 0, 2.67239, 0, -2.67239, 0, -1.16814e-07, -3.09188, 0.201342, 0.00490916)
+skeleton = NodePath("../CameraController")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+visible = false
 shape = SubResource("CapsuleShape3D_j3eqw")
+
+[node name="UserInterface" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Reticule" type="CenterContainer" parent="UserInterface" node_paths=PackedStringArray("RETICULE_LINES", "PLAYER_CONTROLLER")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -21.0
+offset_top = -20.0
+offset_right = 19.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_v8ix7")
+RETICULE_LINES = [NodePath("Top"), NodePath("Right"), NodePath("Bottom"), NodePath("Left")]
+PLAYER_CONTROLLER = NodePath("../..")
+
+[node name="Top" type="Line2D" parent="UserInterface/Reticule"]
+points = PackedVector2Array(0, -5, 0, -15)
+width = 2.0
+
+[node name="Right" type="Line2D" parent="UserInterface/Reticule"]
+points = PackedVector2Array(5, 0, 15, 0)
+width = 2.0
+
+[node name="Bottom" type="Line2D" parent="UserInterface/Reticule"]
+points = PackedVector2Array(0, 5, 0, 15)
+closed = true
+width = 2.0
+
+[node name="Left" type="Line2D" parent="UserInterface/Reticule"]
+points = PackedVector2Array(-5, 0, -15, 0)
+width = 2.0
+
+[node name="DebugPanel" type="PanelContainer" parent="UserInterface"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+offset_left = 10.0
+offset_top = 40.0
+offset_right = 210.0
+offset_bottom = 80.0
+theme = ExtResource("9_vsn6u")
+script = ExtResource("10_totjo")
+
+[node name="MarginContainer" type="MarginContainer" parent="UserInterface/DebugPanel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UserInterface/DebugPanel/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PlayerStateMachine" type="Node" parent="." node_paths=PackedStringArray("CURRENT_STATE")]
+script = ExtResource("11_totjo")
+CURRENT_STATE = NodePath("IdlePlayerState")
+
+[node name="IdlePlayerState" type="Node" parent="PlayerStateMachine" node_paths=PackedStringArray("ANIMATION")]
+script = ExtResource("12_js4yh")
+ANIMATION = NodePath("../../AnimationPlayer")
+
+[node name="WalkingPlayerState" type="Node" parent="PlayerStateMachine" node_paths=PackedStringArray("ANIMATION")]
+script = ExtResource("13_06cyt")
+ANIMATION = NodePath("../../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_js4yh")
+}

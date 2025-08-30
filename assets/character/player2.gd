@@ -2,34 +2,66 @@ extends CharacterBody3D
 
 @export var base_speed = 5
 @export var sprint_speed = 10
-@export var jump_velocity = 4.5
+@export var jump_velocity = 6
+@export var MOUSE_SENSITIVITY : float = 1.0
+@export var player : CharacterBody3D
+
+@export var acceleration : float = 0.1
+@export var deceleration : float = 0.1
 
 @export var camera: Camera3D
-@export var pivot: Node3D
 
-@export var bullet: PackedScene
-@export var bullet_velocity = 30
-@export var Bullet_Point: Marker3D
-var camera_collision = Get_Camera_Collision
+@export var TILT_LOWER_LIMIT : float = -90.0
+@export var TILT_UPPER_LIMIT : float = 90.0
+
+var _mouse_input : bool = false
+var _rotation_input : float
+var _tilt_input : float
+var _mouse_rotation : Vector3
+var _player_rotation : Vector3
+var _camera_rotation : Vector3
 
 var current_speed = base_speed
+
+func _ready():
+	
+	Global.player = self
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	elif event.is_action_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		if event is InputEventMouseMotion:
-			pivot.rotate_y(-event.relative.x * 0.002)
-			camera.rotate_x(-event.relative.y * 0.002)
-			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-90), deg_to_rad(90))
+	_mouse_input = event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED
+	if _mouse_input:
+		_rotation_input = -event.relative.x * MOUSE_SENSITIVITY
+		_tilt_input = -event.relative.y * MOUSE_SENSITIVITY
+	#	player.rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
+	#	camera.rotate_x(-event.relative.y * MOUSE_SENSITIVITY)
+	#	camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(TILT_LOWER_LIMIT), deg_to_rad(TILT_UPPER_LIMIT))
+func _update_camera(delta):
+	_mouse_rotation.x += _tilt_input * delta
+	_mouse_rotation.x = clamp(_mouse_rotation.x, deg_to_rad(TILT_LOWER_LIMIT), deg_to_rad(TILT_UPPER_LIMIT))
+	_mouse_rotation.y += _rotation_input * delta
+	
+	_player_rotation = Vector3(0.0, _mouse_rotation.y,0.0)
+	_camera_rotation = Vector3(_mouse_rotation.x,0.0,0.0)
+	
+	camera.transform.basis = Basis.from_euler(_camera_rotation)
+	camera.rotation.z = 0.0
+	
+	global_transform.basis = Basis.from_euler(_player_rotation)
+	
+	_rotation_input = 0.0
+	_tilt_input = 0.0
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
-		velocity += get_gravity() * delta
-
+		velocity += get_gravity() * delta * 2
+		
+	_update_camera(delta)
+	
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_velocity
@@ -39,54 +71,20 @@ func _physics_process(delta: float) -> void:
 		current_speed = sprint_speed
 	if Input.is_action_just_released("sprint"):
 		current_speed = base_speed
-	
-	# Call the shoot() function on left mouse button
-	if Input.is_action_just_pressed("shoot"):
-		shoot()
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir := Input.get_vector("left", "right", "forward", "back")
-	var direction = (pivot.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
-		velocity.x = direction.x * current_speed
-		velocity.z = direction.z * current_speed
+		velocity.x = lerp(velocity.x,direction.x * current_speed, acceleration)
+		velocity.z = lerp(velocity.z,direction.z * current_speed, acceleration)
 	else:
-		velocity.x = move_toward(velocity.x, 0, current_speed)
-		velocity.z = move_toward(velocity.z, 0, current_speed)
-
+		#velocity.x = move_toward(velocity.x, 0, deceleration)
+		#velocity.z = move_toward(velocity.z, 0, deceleration)
+		velocity.x = lerp(velocity.x,direction.x * current_speed, deceleration)
+		velocity.z = lerp(velocity.z,direction.z * current_speed, deceleration)
+#		velocity.x = 0.0
+#		velocity.z = 0.0
+	
 	move_and_slide()
-	
-func shoot() -> void:
-	# Get a raycast point from the center of the camera
-	var camera_collision = Get_Camera_Collision()
-	
-	# Get direction from the raycast and the bullet_point marker
-	var direction = (camera_collision - Bullet_Point.get_global_transform().origin).normalized()
-	
-	# Instantiate the bullet scene
-	var projectile = bullet.instantiate()
-	
-	# Spawns the bullet at the Bullet_Point marker and gives it a velocity in the direction of the raycast
-	get_parent().add_child(projectile)
-	projectile.global_position = Bullet_Point.global_position
-	projectile.set_linear_velocity(direction*bullet_velocity)
-	
-# Just a little mess around with ray casting, much easier way to do this is just set transform relative to bullet marker
-# Can easily be used for hitscan bullets instead of projectile based bullets
-func Get_Camera_Collision() -> Vector3:
-	# Get viewport size and spawn ray from center of viewport
-	var viewport = get_viewport().get_size()
-	var ray_origin = camera.project_ray_origin(viewport/2)
-	# Set max distance of ray if no collision detected
-	var ray_end = ray_origin + camera.project_ray_normal(viewport/2)*100
-	# Find intersection of ray with 3d object
-	var new_intersection = PhysicsRayQueryParameters3D.create(ray_origin,ray_end)
-	var intersection = get_world_3d().direct_space_state.intersect_ray(new_intersection)
-	# Return either the collision point of the ray with 3d object or the maximum ray distance
-	if not intersection.is_empty():
-		var col_point = intersection.position
-		return col_point
-	else:
-		return ray_end
-		

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dmexsha1e2q2p"]
+
+[ext_resource type="ArrayMesh" uid="uid://b0gie24c7mekm" path="res://assets/models/AK47.res" id="1_87vbe"]
+
+[node name="AK47" type="Node3D"]
+
+[node name="AK47Mesh" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_87vbe")
